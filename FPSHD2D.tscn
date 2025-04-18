@@ -72,10 +72,15 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_vym3e")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="suelo" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.002, 0)
 use_collision = true
 size = Vector3(50, 0.002, 50)
+
+[node name="caja" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1.19901, -10)
+use_collision = true
+size = Vector3(2.94141, 2.40803, 1.87085)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
 script = ExtResource("1_sf678")
@@ -100,10 +105,14 @@ sprite_frames = SubResource("SpriteFrames_87gny")
 animation = &"disparo"
 
 [node name="RayCast3D" type="RayCast3D" parent="CharacterBody3D/Head/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.447016)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.15035, -0.149397, 0.238943)
+
+[node name="BULLETPOS" type="Node3D" parent="CharacterBody3D/Head/Camera3D"]
+transform = Transform3D(0.999391, 0, 0.0348995, 0, 1, 0, -0.0348995, 0, 0.999391, 0.15035, -0.149397, 0.242486)
 
 [node name="ENEMY" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -15)
+transform = Transform3D(0.999997, 0.00034356, -0.0023709, -0.000337886, 0.999997, 0.00239318, 0.00237171, -0.00239237, 0.999994, 0, 1, -15)
+disable_mode = 2
 script = ExtResource("7_flvd7")
 speed = 4.0
 

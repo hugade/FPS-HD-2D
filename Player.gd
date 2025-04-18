@@ -9,9 +9,15 @@ const BOB_FREQ = 2.0
 const BOB_AMP = 0.08
 var t_bob = 0.0
 
+var damage = 1.0
+
 @onready var head = $Head
 @onready var camera = $Head/Camera3D
 @onready var gun_anim = $Head/Camera3D/Gun
+
+var bullet = load("res://bala.tscn")
+var instance 
+@onready var bulletpos = $Head/Camera3D/BULLETPOS
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
@@ -54,6 +60,10 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("fire"):
 		if !gun_anim.is_playing():
 			gun_anim.play("disparo")
+			instance = bullet.instantiate()
+			instance.position = bulletpos.global_position
+			instance.transform.basis = bulletpos.global_transform.basis
+			get_parent().add_child(instance)
 		
 	
 	move_and_slide()
