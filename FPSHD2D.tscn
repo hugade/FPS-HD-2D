@@ -1,13 +1,12 @@
-[gd_scene load_steps=16 format=3 uid="uid://cpy6ahpj03e33"]
+[gd_scene load_steps=14 format=3 uid="uid://cpy6ahpj03e33"]
 
 [ext_resource type="Script" path="res://Player.gd" id="1_sf678"]
-[ext_resource type="Texture2D" uid="uid://7dl0l25xp3q8" path="res://ARTE PFC/copeta/gun1.png" id="2_g2ytm"]
-[ext_resource type="Texture2D" uid="uid://x11tlhnnseeu" path="res://ARTE PFC/copeta/gun2.png" id="3_035b0"]
-[ext_resource type="Texture2D" uid="uid://ccbvtdqisyd7s" path="res://ARTE PFC/copeta/gun3.png" id="4_l7anh"]
-[ext_resource type="Texture2D" uid="uid://ckuxwcq8opcsy" path="res://ARTE PFC/copeta/gun4.png" id="5_dh4tf"]
-[ext_resource type="Texture2D" uid="uid://bth6478iq5gju" path="res://ARTE PFC/copeta/gun5.png" id="6_610t3"]
-[ext_resource type="Script" path="res://enemy.gd" id="7_flvd7"]
-[ext_resource type="Texture2D" uid="uid://cxg0iiobrjjex" path="res://ARTE PFC/prueba1.png" id="7_qes4e"]
+[ext_resource type="Texture2D" uid="uid://cte7fpe1vs3qx" path="res://ARTE PFC/copeta/gun.png" id="2_08vru"]
+[ext_resource type="Texture2D" uid="uid://8nbcvp3af4tw" path="res://ARTE PFC/shoot.png" id="3_v8t01"]
+[ext_resource type="Script" path="res://spawn_manager.gd" id="4_7ga08"]
+[ext_resource type="Texture2D" uid="uid://uuxd78a83cvs" path="res://ARTE PFC/copeta/punto.png" id="4_qcx7a"]
+[ext_resource type="Script" path="res://UpgradeManager.gd" id="5_5gy0m"]
+[ext_resource type="PackedScene" uid="uid://bx4yw3my03hxh" path="res://enemyscene.tscn" id="5_7w8dc"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_bvpt4"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -20,6 +19,7 @@ sky_material = SubResource("ProceduralSkyMaterial_bvpt4")
 background_mode = 2
 sky = SubResource("Sky_r82ql")
 tonemap_mode = 2
+ssao_enabled = true
 glow_enabled = true
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_vjud6"]
@@ -31,22 +31,13 @@ points = PackedVector3Array(-0.125207, -0.532801, -0.480507, 0.0227831, 0.47607,
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_g2ytm")
+"texture": ExtResource("3_v8t01")
 }, {
 "duration": 1.0,
-"texture": ExtResource("3_035b0")
+"texture": ExtResource("3_v8t01")
 }, {
 "duration": 1.0,
-"texture": ExtResource("4_l7anh")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_dh4tf")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_610t3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_g2ytm")
+"texture": ExtResource("2_08vru")
 }],
 "loop": false,
 "name": &"disparo",
@@ -54,14 +45,12 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": ExtResource("2_g2ytm")
+"texture": ExtResource("2_08vru")
 }],
 "loop": true,
 "name": &"idle",
 "speed": 5.0
 }]
-
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bg7ao"]
 
 [node name="Node3D" type="Node3D"]
 
@@ -72,54 +61,198 @@ shadow_enabled = true
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_vym3e")
 
-[node name="suelo" type="CSGBox3D" parent="."]
+[node name="Room" type="Node3D" parent="."]
+
+[node name="pared2" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 5, 0)
+use_collision = true
+size = Vector3(0.002, 10, 80)
+
+[node name="pared" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 5, 0)
+use_collision = true
+size = Vector3(0.002, 10, 80)
+
+[node name="pared3" type="CSGBox3D" parent="Room"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 5, -40)
+use_collision = true
+size = Vector3(0.002, 10, 80)
+
+[node name="pared4" type="CSGBox3D" parent="Room"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 5, 40)
+use_collision = true
+size = Vector3(0.002, 10, 80)
+
+[node name="suelo2" type="CSGBox3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.998, 0)
+use_collision = true
+size = Vector3(80, 0.002, 80)
+
+[node name="suelo" type="CSGBox3D" parent="Room"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.002, 0)
 use_collision = true
-size = Vector3(50, 0.002, 50)
+size = Vector3(80, 0.002, 80)
 
-[node name="caja" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1.19901, -10)
-use_collision = true
-size = Vector3(2.94141, 2.40803, 1.87085)
+[node name="OmniLight3D" type="OmniLight3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, -20)
+light_color = Color(1, 1, 0.854902, 1)
+light_energy = 5.0
+light_specular = 1.0
+omni_range = 81.1311
 
-[node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+[node name="OmniLight3D2" type="OmniLight3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 9, -20)
+light_color = Color(1, 1, 0.854902, 1)
+light_energy = 5.0
+light_specular = 1.0
+omni_range = 81.1311
+
+[node name="OmniLight3D3" type="OmniLight3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 9, 20)
+light_color = Color(1, 1, 0.854902, 1)
+light_energy = 5.0
+light_specular = 1.0
+omni_range = 81.1311
+
+[node name="OmniLight3D4" type="OmniLight3D" parent="Room"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 9, 20)
+light_color = Color(1, 1, 0.854902, 1)
+light_energy = 5.0
+light_specular = 1.0
+omni_range = 81.1311
+
+[node name="Player" type="CharacterBody3D" parent="." groups=["player"]]
 script = ExtResource("1_sf678")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 mesh = SubResource("CapsuleMesh_vjud6")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("ConvexPolygonShape3D_k1r3q")
 
-[node name="Head" type="Node3D" parent="CharacterBody3D"]
+[node name="Head" type="Node3D" parent="Player"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7176, 0)
 
-[node name="Camera3D" type="Camera3D" parent="CharacterBody3D/Head"]
+[node name="Camera3D" type="Camera3D" parent="Player/Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.373293)
 
-[node name="Gun" type="AnimatedSprite2D" parent="CharacterBody3D/Head/Camera3D"]
-position = Vector2(875, 453)
-scale = Vector2(2.80137, 2.80137)
+[node name="Sprite2D" type="Sprite2D" parent="Player/Head/Camera3D"]
+position = Vector2(576.889, 324.5)
+scale = Vector2(0.4, 0.4)
+texture = ExtResource("4_qcx7a")
+
+[node name="Gun" type="AnimatedSprite2D" parent="Player/Head/Camera3D"]
+scale = Vector2(0.6, 0.6)
 sprite_frames = SubResource("SpriteFrames_87gny")
 animation = &"disparo"
+centered = false
 
-[node name="RayCast3D" type="RayCast3D" parent="CharacterBody3D/Head/Camera3D"]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0.15035, -0.149397, 0.238943)
+[node name="RayCast3D" type="RayCast3D" parent="Player/Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, -0.149, -0.121662)
 
-[node name="BULLETPOS" type="Node3D" parent="CharacterBody3D/Head/Camera3D"]
-transform = Transform3D(0.999391, 0, 0.0348995, 0, 1, 0, -0.0348995, 0, 0.999391, 0.15035, -0.149397, 0.242486)
+[node name="BULLETPOS" type="Node3D" parent="Player/Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.205821, -0.149397, -1.11233)
 
-[node name="ENEMY" type="CharacterBody3D" parent="."]
-transform = Transform3D(0.999997, 0.00034356, -0.0023709, -0.000337886, 0.999997, 0.00239318, 0.00237171, -0.00239237, 0.999994, 0, 1, -15)
-disable_mode = 2
-script = ExtResource("7_flvd7")
-speed = 4.0
+[node name="ShootCoolDown" type="Timer" parent="Player"]
+one_shot = true
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="ENEMY"]
-shape = SubResource("CapsuleShape3D_bg7ao")
+[node name="Detector" type="Area3D" parent="Player"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
-[node name="Sprite_Enemigo" type="Sprite3D" parent="ENEMY"]
-transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
-billboard = 2
-texture = ExtResource("7_qes4e")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Player/Detector"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("ConvexPolygonShape3D_k1r3q")
+
+[node name="UpgradeManager" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 9, 20)
+script = ExtResource("5_5gy0m")
+
+[node name="Canvas" type="Node2D" parent="."]
+
+[node name="UpgradeScreen" type="CanvasGroup" parent="Canvas"]
+process_mode = 2
+visible = false
+
+[node name="TextEdit" type="TextEdit" parent="Canvas/UpgradeScreen"]
+modulate = Color(1, 1, 1, 0.964706)
+offset_left = 418.0
+offset_top = 32.0
+offset_right = 571.0
+offset_bottom = 67.0
+scale = Vector2(2, 2)
+theme_override_colors/background_color = Color(0, 0, 0, 0)
+theme_override_colors/font_placeholder_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+text = "CHOOSE UPGRADE"
+editable = false
+context_menu_enabled = false
+shortcut_keys_enabled = false
+selecting_enabled = false
+deselect_on_focus_loss_enabled = false
+drag_and_drop_selection_enabled = false
+virtual_keyboard_enabled = false
+middle_mouse_paste_enabled = false
+scroll_fit_content_height = true
+
+[node name="ATKDMGButton" type="Button" parent="Canvas/UpgradeScreen"]
+process_mode = 2
+offset_left = 200.0
+offset_top = 130.0
+offset_right = 450.0
+offset_bottom = 430.0
+text = "ATTACK
+DAMAGE"
+
+[node name="ATKSPDButton" type="Button" parent="Canvas/UpgradeScreen"]
+process_mode = 2
+offset_left = 695.0
+offset_top = 130.0
+offset_right = 945.0
+offset_bottom = 430.0
+text = "ATTACK
+SPEED"
+
+[node name="Layout" type="CanvasGroup" parent="Canvas"]
+
+[node name="TotalDeadEnemiesTXT" type="Label" parent="Canvas/Layout"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = 945.0
+offset_right = 985.0
+offset_bottom = 23.0
+grow_horizontal = 0
+scale = Vector2(5, 5)
+text = "0"
+horizontal_alignment = 1
+
+[node name="VidaTXT" type="Label" parent="Canvas/Layout"]
+offset_top = 530.0
+offset_right = 40.0
+offset_bottom = 553.0
+scale = Vector2(5, 5)
+theme_override_colors/font_color = Color(0, 0.756863, 0, 1)
+text = "20"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpawnManager" type="Node3D" parent="."]
+script = ExtResource("4_7ga08")
+enemyscene = ExtResource("5_7w8dc")
+
+[node name="PositiveLimit" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37, 1, 37)
+
+[node name="NegativeLimit" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37, 1, -37)
+
+[node name="EnemySpawnTimer" type="Timer" parent="."]
+wait_time = 3.0
+autostart = true
+
+[connection signal="pressed" from="Canvas/UpgradeScreen/ATKDMGButton" to="Player" method="_on_atkdmg_button_pressed"]
+[connection signal="pressed" from="Canvas/UpgradeScreen/ATKDMGButton" to="UpgradeManager" method="_on_atkdmg_button_pressed"]
+[connection signal="pressed" from="Canvas/UpgradeScreen/ATKSPDButton" to="Player" method="_on_atkspd_button_pressed"]
+[connection signal="pressed" from="Canvas/UpgradeScreen/ATKSPDButton" to="UpgradeManager" method="_on_atkspd_button_pressed"]

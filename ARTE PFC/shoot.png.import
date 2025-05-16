@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ckuxwcq8opcsy"
-path="res://.godot/imported/gun4.png-252f90757fa7939d843b653550c3381f.ctex"
+uid="uid://8nbcvp3af4tw"
+path="res://.godot/imported/shoot.png-2e904405c6b1d97a8040b91be91ea293.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://ARTE PFC/copeta/gun4.png"
-dest_files=["res://.godot/imported/gun4.png-252f90757fa7939d843b653550c3381f.ctex"]
+source_file="res://ARTE PFC/shoot.png"
+dest_files=["res://.godot/imported/shoot.png-2e904405c6b1d97a8040b91be91ea293.ctex"]
 
 [params]
 

@@ -1,13 +1,9 @@
 extends CharacterBody3D
 
 
-const SPEED = 5.0
-const JUMP_VELOCITY = 4.5
+const SPEED = 7.0
+const JUMP_VELOCITY = 6.0
 const SENSITIVITY = 0.003
-
-const BOB_FREQ = 2.0
-const BOB_AMP = 0.08
-var t_bob = 0.0
 
 var damage = 1.0
 
@@ -16,11 +12,21 @@ var damage = 1.0
 @onready var gun_anim = $Head/Camera3D/Gun
 
 var bullet = load("res://bala.tscn")
-var instance 
+var instance
+var life = 20
+
 @onready var bulletpos = $Head/Camera3D/BULLETPOS
+@onready var raycast = $Head/Camera3D/RayCast3D
+@onready var cooldowntimer = $ShootCoolDown
+@onready var lifetxt = $"../Canvas/Layout/VidaTXT"
+
+var can_take_damage = true
 
 func _ready():
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+	cooldowntimer.wait_time = 1.0
+	$Detector.connect("area_entered", Callable(self, "_on_enemy_detected"))
+	gun_anim.play("idle")
 
 func _unhandled_input(event):
 	if event is InputEventMouseMotion:
@@ -52,24 +58,39 @@ func _physics_process(delta: float) -> void:
 		velocity.x = lerp(velocity.x, direction.x * SPEED,delta * 3.0)
 		velocity.z = lerp(velocity.z, direction.z * SPEED,delta * 3.0)
 		
-	# HEAD BOB
-	t_bob += delta * velocity.length() * float(is_on_floor())
-	camera.transform.origin = _headbob(t_bob)
-	
-	# DISPARAR
-	if Input.is_action_pressed("fire"):
-		if !gun_anim.is_playing():
-			gun_anim.play("disparo")
-			instance = bullet.instantiate()
-			instance.position = bulletpos.global_position
-			instance.transform.basis = bulletpos.global_transform.basis
-			get_parent().add_child(instance)
-		
-	
 	move_and_slide()
 	
-func _headbob(time) -> Vector3:
-	var pos = Vector3.ZERO
-	pos.y = sin(time * BOB_FREQ) * BOB_AMP
-	pos.x = cos(time * BOB_FREQ / 2) * BOB_AMP
-	return pos
+	lifetxt.text = str(life)
+	
+	if Input.is_action_pressed("fire") and cooldowntimer.is_stopped():
+		_shoot()
+		cooldowntimer.start()
+
+func _shoot():
+	gun_anim.play("disparo")
+	var new_bullet = bullet.instantiate()
+	new_bullet.global_position = bulletpos.global_position
+	new_bullet.rotation = Vector3(camera.rotation.x, head.rotation.y, 0.0)
+	if raycast.is_colliding():
+		var hit_point = raycast.get_collision_point()
+		new_bullet.direction = (hit_point - bulletpos.global_position).normalized()
+	else:
+		new_bullet.direction = -bulletpos.global_transform.basis.z.normalized()
+	get_parent().add_child(new_bullet)
+
+func _on_atkspd_button_pressed() -> void:
+	cooldowntimer.wait_time = max(0.1, cooldowntimer.wait_time - 0.2)
+
+func _on_atkdmg_button_pressed() -> void:
+	damage += 1
+
+func take_damage(damageamount: float):
+	life -= damageamount
+
+func _on_enemy_detected(area):
+	if can_take_damage and area.is_in_group("enemigos"):
+		if area.has_method("get_enemy_dmg"):
+			take_damage(area.get_enemy_dmg())
+			can_take_damage = false
+			await get_tree().create_timer(1.0).timeout
+			can_take_damage = true
